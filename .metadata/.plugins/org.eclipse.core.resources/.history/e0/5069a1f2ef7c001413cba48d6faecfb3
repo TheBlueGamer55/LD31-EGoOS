@@ -1,0 +1,19 @@
+package com.swinestudios.onescreen;
+
+import org.mini2Dx.core.game.ScreenBasedGame;
+
+public class OneScreen extends ScreenBasedGame {
+
+	@Override
+	public int getInitialScreenId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void initialise() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+}

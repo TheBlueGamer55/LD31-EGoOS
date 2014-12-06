@@ -1,0 +1,5 @@
+package com.swinestudios.onescreen;
+
+public class OneScreen extends ScreenBasedGame {
+	
+}

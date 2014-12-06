@@ -1,0 +1,68 @@
+package com.swinestudios.onescreen;
+
+import org.mini2Dx.core.game.GameContainer;
+import org.mini2Dx.core.graphics.Graphics;
+import org.mini2Dx.core.screen.GameScreen;
+import org.mini2Dx.core.screen.ScreenManager;
+import org.mini2Dx.core.screen.Transition;
+
+public class MainMenu implements GameScreen {
+
+	public static final int ID = 0;
+	
+	@Override
+	public int getId() {
+		// TODO Auto-generated method stub
+		return ID;
+	}
+
+	@Override
+	public void initialise(GameContainer arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void interpolate(GameContainer arg0, float arg1) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void postTransitionIn(Transition arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void postTransitionOut(Transition arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void preTransitionIn(Transition arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void preTransitionOut(Transition arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void render(GameContainer arg0, Graphics arg1) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void update(GameContainer arg0,
+			ScreenManager<? extends GameScreen> arg1, float arg2) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
