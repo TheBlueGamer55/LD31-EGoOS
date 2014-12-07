@@ -1,15 +1,13 @@
 package com.swinestudios.onescreen;
 
-import org.mini2Dx.core.game.GameContainer;
 import org.mini2Dx.core.geom.Rectangle;
 import org.mini2Dx.core.graphics.Graphics;
-import org.mini2Dx.core.screen.GameScreen;
-import org.mini2Dx.core.screen.ScreenManager;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
 
-public class Player{
+public class Player implements InputProcessor{
 
 	//Note: The half-pixel-offset problem has not been fixed yet.
 	public float x, y;
@@ -26,6 +24,7 @@ public class Player{
 	public final float maxSpeedY = 6.0f;
 
 	public boolean onGround;
+	public boolean isActive;
 
 	public Rectangle hitbox;
 
@@ -42,22 +41,26 @@ public class Player{
 		accelX = 0;
 		accelY = 0;
 		onGround = false;
+		isActive = false;
 		this.level = level;
 		type = "Player";
+		
+		//Important to initialize input processor when implementing the interface
+		//Gdx.input.setInputProcessor(this);
 	}
 
-	public void render(GameContainer gc, Graphics g){
+	public void render(Graphics g){
 		g.drawRect(x, y, hitbox.width, hitbox.height);
 	}
 
-	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){
+	public void update(float delta){
 		if(collisionExistsAt(x, y + 1)){
 			onGround = true;
 		}
 		else{
 			onGround = false;
 		}
-
+		
 		accelX = 0; //keep resetting the x acceleration
 
 		//Move Left
@@ -73,13 +76,6 @@ public class Player{
 		//Apply friction when not moving or when exceeding the max horizontal speed
 		if(Math.abs(velX) > maxSpeedX || !Gdx.input.isKeyPressed(Keys.A) && !Gdx.input.isKeyPressed(Keys.D)){
 			friction(true, false);
-		}
-
-		//Jump
-		if(Gdx.input.isKeyPressed(Keys.SPACE)){
-			if(onGround){
-				jump();
-			}
 		}
 
 		limitSpeed(false, true);
@@ -203,7 +199,10 @@ public class Player{
 	 */
 	public void moveX(){
 		for(int i = 0; i < level.solids.size(); i++){
-			Rectangle solid = level.solids.get(i);
+			Block solid = level.solids.get(i);
+			if(solid.isSelectionBlock && solid.isSelected){
+				break; //cannot collide with selected blocks
+			}
 			if(isColliding(solid, x + velX, y)){
 				while(!isColliding(solid, x + Math.signum(velX), y)){
 					x += Math.signum(velX);
@@ -221,7 +220,10 @@ public class Player{
 	 */
 	public void moveY(){
 		for(int i = 0; i < level.solids.size(); i++){
-			Rectangle solid = level.solids.get(i);
+			Block solid = level.solids.get(i);
+			if(solid.isSelectionBlock && solid.isSelected){
+				break; //cannot collide with selected blocks
+			}
 			if(isColliding(solid, x, y + velY)){
 				while(!isColliding(solid, x, y + Math.signum(velY))){
 					y += Math.signum(velY);
@@ -231,6 +233,56 @@ public class Player{
 		}
 		y += velY;
 		velY += accelY;
+	}
+	
+	/*
+	 * ----------------------Input functions-----------------------
+	 */
+	
+	@Override
+	public boolean keyDown(int keycode){
+		//Jump
+		if(keycode == Keys.SPACE){
+			if(onGround){
+				jump();
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean keyUp(int keycode){
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character){
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button){
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button){
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer){
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY){
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount){
+		return false;
 	}
 
 }
