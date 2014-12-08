@@ -18,6 +18,8 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class MainMenu implements GameScreen, InputProcessor{
 
@@ -34,6 +36,8 @@ public class MainMenu implements GameScreen, InputProcessor{
 	public Block currentSelection;
 
 	private TiledMap map;
+	private Sprite mainMenuBackground;
+	private Sprite gameOverBackground;
 
 	@Override
 	public int getId(){
@@ -43,10 +47,15 @@ public class MainMenu implements GameScreen, InputProcessor{
 	@Override
 	public void initialise(GameContainer gc){
 		try{
-			map = new TiledMap(Gdx.files.internal("monitorCircuitMap.tmx"));
+			map = new TiledMap(Gdx.files.internal("monitorCircuitMap2.tmx"));
 		}catch (IOException e){
 			e.printStackTrace();
 		}
+		mainMenuBackground = new Sprite(new Texture(Gdx.files.internal("mainMenuScreen.png")));
+		gameOverBackground = new Sprite(new Texture(Gdx.files.internal("blueScreenOfDeath.png")));
+		adjustSprite(mainMenuBackground, gameOverBackground);
+		mainMenuBackground.scale(3);
+		gameOverBackground.scale(1);
 	}
 
 	@Override
@@ -54,9 +63,8 @@ public class MainMenu implements GameScreen, InputProcessor{
 		solids = new ArrayList<Block>();
 		currentSelection = null;
 
-		player = new Player(320, 240, 16, 16, this);
+		player = new Player(5 * 16, 55 * 16, this);
 		mouse = new Rectangle(Gdx.input.getX(), Gdx.input.getY(), 1, 1);
-		//solids.add(mouse);
 
 		camX = player.x - Gdx.graphics.getWidth() / 2;
 		camY = player.y - Gdx.graphics.getHeight() / 2;
@@ -93,15 +101,23 @@ public class MainMenu implements GameScreen, InputProcessor{
 
 	@Override
 	public void render(GameContainer gc, Graphics g){
-		map.draw(g, 0, 0);
-		renderSolids(g);
-		player.render(g);
+		if(!player.isActive){
+			g.drawSprite(mainMenuBackground);
+		}
+		else{
+			g.translate((float) Math.round(camX), (float) Math.round(camY)); //camera movement
+			map.draw(g, 0, 0);
+			renderSolids(g);
+			player.render(g);
+		}
 	}
 
 	@Override
-	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){
-		mouse.setX(Gdx.input.getX());
-		mouse.setY(Gdx.input.getY());
+	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){		
+		camX = player.x - Gdx.graphics.getWidth() / 2;
+		camY = player.y - Gdx.graphics.getHeight() / 2;
+		mouse.setX(camX + Gdx.input.getX());
+		mouse.setY(camY + Gdx.input.getY());
 
 		if(Gdx.input.isKeyPressed(Keys.ENTER)){
 			player.isActive = true;
@@ -280,6 +296,17 @@ public class MainMenu implements GameScreen, InputProcessor{
 			}
 		}
 	}
+	
+	/*
+	 * Sets up any images that the player may have. Necessary because images are flipped and have the origin
+	 * on the bottom-left by default.
+	 */
+	public void adjustSprite(Sprite... s){
+		for(int i = 0; i < s.length; i++){
+			s[i].setOrigin(0, 0);
+			s[i].flip(false, true);
+		}
+	}
 
 	@Override
 	public void interpolate(GameContainer gc, float delta){
@@ -311,7 +338,7 @@ public class MainMenu implements GameScreen, InputProcessor{
 			for(int i = 0; i < solids.size(); i++){ //find the block that was clicked on
 				Block temp = solids.get(i);
 				if(mouse.overlaps(temp) && temp.isSelectionBlock){
-					floodFill(temp, temp.color); //TODO test line of code
+					floodFill(temp, temp.color); //TODO test line of code? maybe keep
 					if(!temp.isActive){ //only runs once for each inactive block
 						temp.isActive = true;
 					}

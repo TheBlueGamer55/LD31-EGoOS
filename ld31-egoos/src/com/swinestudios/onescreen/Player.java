@@ -6,7 +6,8 @@ import org.mini2Dx.core.graphics.Graphics;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Player implements InputProcessor{
 
@@ -20,23 +21,27 @@ public class Player implements InputProcessor{
 	public final float frictionY = 0.4f;
 	public final float gravity = 0.2f;
 	public final float moveSpeed = 1.0f;
-	public final float jumpSpeed = 8.0f;
-	public final float maxSpeedX = 3.0f;
-	public final float maxSpeedY = 6.0f;
+	public final float jumpSpeed = 4.0f;
+	public final float maxSpeedX = 2.0f;
+	public final float maxSpeedY = 4.0f;
 
 	public boolean onGround;
 	public boolean isActive;
 
 	public Rectangle hitbox;
+	
+	public Sprite sprite;
 
 	public MainMenu level;
 
 	public String type;
 
-	public Player(float x, float y, float width, float height, MainMenu level){
+	public Player(float x, float y, MainMenu level){
+		sprite = new Sprite(new Texture(Gdx.files.internal("number2.png")));
+		adjustSprite(sprite);
 		this.x = x;
 		this.y = y;
-		hitbox = new Rectangle(x, y, width, height);
+		hitbox = new Rectangle(x, y, sprite.getWidth(), sprite.getHeight());
 		velX = 0;
 		velY = 0;
 		accelX = 0;
@@ -48,8 +53,7 @@ public class Player implements InputProcessor{
 	}
 
 	public void render(Graphics g){
-		g.setColor(Color.MAGENTA);
-		g.drawRect(x, y, hitbox.width, hitbox.height);
+		g.drawSprite(sprite, x, y);
 	}
 
 	public void update(float delta){
@@ -57,7 +61,7 @@ public class Player implements InputProcessor{
 			onGround = true;
 		}
 		else{
-			onGround = false;
+			onGround = true; //TODO switch back to false after testing
 		}
 		
 		accelX = 0; //keep resetting the x acceleration
@@ -234,6 +238,17 @@ public class Player implements InputProcessor{
 		}
 		y += velY;
 		velY += accelY;
+	}
+	
+	/*
+	 * Sets up any images that the player may have. Necessary because images are flipped and have the origin
+	 * on the bottom-left by default.
+	 */
+	public void adjustSprite(Sprite... s){
+		for(int i = 0; i < s.length; i++){
+			s[i].setOrigin(0, 0);
+			s[i].flip(false, true);
+		}
 	}
 	
 	/*

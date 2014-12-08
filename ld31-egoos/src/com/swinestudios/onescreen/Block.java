@@ -66,8 +66,8 @@ public class Block extends Rectangle{
 			g.setColor(color);
 			g.fillRect(x, y, width, height);
 		}
-		g.setColor(Color.BLACK);
-		g.drawString("" + thisID, x, y);
+		//g.setColor(Color.BLACK);
+		//g.drawString("" + thisID, x, y);
 	}
 	
 	public void update(float delta){
@@ -88,8 +88,8 @@ public class Block extends Rectangle{
 				this.setY(y);
 			}
 			else{
-				this.setX(Gdx.input.getX() - this.width / 2);
-				this.setY(Gdx.input.getY() - this.height / 2);
+				this.setX(level.camX + Gdx.input.getX() - this.width / 2);
+				this.setY(level.camY + Gdx.input.getY() - this.height / 2);
 			}
 		}
 	}
@@ -114,6 +114,10 @@ public class Block extends Rectangle{
 					x += Math.signum(velX);
 				}
 				velX = 0;
+				//"corrupt" any other blocks touched by setting them active
+				if(solid.isSelectionBlock){ 
+					solid.isActive = true;
+				}
 			}
 		}
 		x += velX;
@@ -135,6 +139,10 @@ public class Block extends Rectangle{
 					y += Math.signum(velY);
 				}
 				velY = 0;
+				//"corrupt" any other blocks touched by setting them active
+				if(solid.isSelectionBlock){ 
+					solid.isActive = true;
+				}
 			}
 		}
 		y += velY;

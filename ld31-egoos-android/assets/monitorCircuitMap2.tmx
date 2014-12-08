@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="80" height="60" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="circuitTileset" tilewidth="16" tileheight="16">
+  <image source="circuitTileset.png" width="192" height="144"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="80" height="60">
+  <data encoding="base64" compression="zlib">
+   eJzt3LtOw0AQhWELiVsBskC4oEqXIgIKCgQIOqBwwVWi4Cre/yEYRFYaRrvesXcdM84pfhE5Tpx8mWQNkaiLothEndqhZlSN/jRV7jeDH/wW6HdPPVCP1BP8Wvu9Ue/UB/VpyE/7fgrdtqmU41nx03RAHVJHLSyWxU8+n3XPPqfUGXUOv2iVZ9sVdU3dZPLTGFrxk8+lYttTazpmbH8rfpr5y/G6aPe/nWfFLzR/oU7m9eHHs+In26U2BvBzWZs/Xznew10/H++M+4XO9Vza+evaq3G/0Lme9PtiPbPk9hVF28KvNuwXOtfrs3JEfkPE/V7gl+Rnbf5y/J6hqWldsuyn8Uy5v63id43g65JcP/ZH5Jc7N1vadWlsfhVLXudmqyk+W2XkWKvU2oj8JtQeayKuL5WGPstY1v2knc+wLOIzJbugLlnH7PLY5q/yJOevrZ+2MfjFyu1ndf6m4udQfjwrftKOG7q/xfXpx4/LL1vx+6/BD37wsxv84Ac/u8EPfvCzG/zgBz+7wQ9+8LMb/OAHP7vBL49f1++2lj3nB7s0P8xfmh/s0vwwf2l+sEvzw/yl+cEuzQ/zl+Y39OOwmrMb+v8gWe3H7hv0mR+V
+  </data>
+ </layer>
+ <objectgroup name="Solids" width="80" height="60">
+  <object x="656" y="304" width="464" height="16"/>
+  <object x="1072" y="320" width="48" height="32"/>
+  <object x="720" y="320" width="80" height="16"/>
+  <object x="672" y="432" width="16" height="16"/>
+  <object x="656" y="448" width="16" height="16"/>
+  <object x="688" y="448" width="16" height="16"/>
+  <object x="704" y="432" width="16" height="16"/>
+  <object x="720" y="448" width="16" height="16"/>
+  <object x="1168" y="448" width="16" height="16"/>
+  <object x="1200" y="448" width="32" height="16"/>
+  <object x="1248" y="448" width="16" height="16"/>
+  <object x="1216" y="352" width="32" height="16"/>
+  <object x="1216" y="384" width="32" height="16"/>
+  <object x="1216" y="416" width="32" height="16"/>
+  <object x="1200" y="48" width="64" height="32"/>
+  <object x="0" y="0" width="1280" height="16"/>
+  <object x="1264" y="16" width="16" height="944"/>
+  <object x="656" y="80" width="16" height="16"/>
+  <object x="656" y="112" width="16" height="16"/>
+  <object x="656" y="144" width="16" height="16"/>
+  <object x="656" y="176" width="16" height="16"/>
+  <object x="720" y="224" width="48" height="48"/>
+  <object x="800" y="96" width="48" height="48"/>
+  <object x="0" y="944" width="1280" height="16"/>
+  <object x="0" y="0" width="16" height="944"/>
+  <object x="16" y="784" width="16" height="144"/>
+  <object x="32" y="800" width="16" height="112"/>
+  <object x="48" y="784" width="16" height="144"/>
+ </objectgroup>
+ <objectgroup name="BlocksWhite" width="80" height="60" visible="0">
+  <object x="848" y="176" width="16" height="16"/>
+  <object x="864" y="176" width="16" height="16"/>
+  <object x="848" y="192" width="16" height="16"/>
+  <object x="864" y="192" width="16" height="16"/>
+  <object x="848" y="224" width="16" height="16"/>
+  <object x="864" y="224" width="16" height="16"/>
+  <object x="848" y="240" width="16" height="16"/>
+  <object x="864" y="240" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup name="BlocksYellow" width="80" height="60" visible="0">
+  <object x="784" y="368" width="16" height="16"/>
+  <object x="800" y="368" width="16" height="16"/>
+  <object x="816" y="368" width="16" height="16"/>
+  <object x="832" y="384" width="16" height="16"/>
+  <object x="816" y="384" width="16" height="16"/>
+  <object x="800" y="384" width="16" height="16"/>
+  <object x="784" y="384" width="16" height="16"/>
+  <object x="768" y="384" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup name="BlocksBlue" width="80" height="60" visible="0">
+  <object x="1168" y="384" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup name="BlocksGreen" width="80" height="60" visible="0">
+  <object x="928" y="240" width="16" height="16"/>
+  <object x="944" y="240" width="16" height="16"/>
+  <object x="960" y="240" width="16" height="16"/>
+  <object x="1024" y="240" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup name="BlocksRed" width="80" height="60" visible="0">
+  <object x="1232" y="272" width="16" height="16"/>
+ </objectgroup>
+</map>
