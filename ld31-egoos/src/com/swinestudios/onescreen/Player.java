@@ -6,6 +6,7 @@ import org.mini2Dx.core.graphics.Graphics;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 
 public class Player implements InputProcessor{
 
@@ -44,12 +45,10 @@ public class Player implements InputProcessor{
 		isActive = false;
 		this.level = level;
 		type = "Player";
-		
-		//Important to initialize input processor when implementing the interface
-		//Gdx.input.setInputProcessor(this);
 	}
 
 	public void render(Graphics g){
+		g.setColor(Color.MAGENTA);
 		g.drawRect(x, y, hitbox.width, hitbox.height);
 	}
 
@@ -87,8 +86,10 @@ public class Player implements InputProcessor{
 	 * Checks if there is a collision if the player was at the given position.
 	 */
 	public boolean isColliding(Rectangle other, float x, float y){
-		Rectangle temp = new Rectangle(x, y, this.hitbox.width, this.hitbox.height);
-		return temp.overlaps(other);
+		if(x < other.x + other.width && x + hitbox.width > other.x && y < other.y + other.height && y + hitbox.height > other.y){
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -201,7 +202,7 @@ public class Player implements InputProcessor{
 		for(int i = 0; i < level.solids.size(); i++){
 			Block solid = level.solids.get(i);
 			if(solid.isSelectionBlock && solid.isSelected){
-				break; //cannot collide with selected blocks
+				continue; //ignore collision checks with selected blocks
 			}
 			if(isColliding(solid, x + velX, y)){
 				while(!isColliding(solid, x + Math.signum(velX), y)){
@@ -222,7 +223,7 @@ public class Player implements InputProcessor{
 		for(int i = 0; i < level.solids.size(); i++){
 			Block solid = level.solids.get(i);
 			if(solid.isSelectionBlock && solid.isSelected){
-				break; //cannot collide with selected blocks
+				continue; //ignore collision checks with selected blocks
 			}
 			if(isColliding(solid, x, y + velY)){
 				while(!isColliding(solid, x, y + Math.signum(velY))){

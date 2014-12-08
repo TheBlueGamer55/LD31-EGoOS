@@ -4,8 +4,13 @@ import org.mini2Dx.core.geom.Rectangle;
 import org.mini2Dx.core.graphics.Graphics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 
 public class Block extends Rectangle{
+	
+	//TODO debug variables
+	public static int id = 0;
+	public int thisID = id;
 	
 	public float velX, velY;
 	public float accelX, accelY;
@@ -22,10 +27,14 @@ public class Block extends Rectangle{
 	public boolean onGround;
 	public boolean isSelectionBlock; //hacky, used to determine what kind of block this is
 	
+	//public final Color[] wireColors = {Color.BLACK, Color.BLUE, Color.GRAY, Color.GREEN, Color.RED, Color.YELLOW, Color.WHITE, Color.ORANGE};
+	public Color color;
+	
 	private MainMenu level;
 	
 	public Block(float x, float y, float width, float height, MainMenu level, boolean selectionType){
 		super(x, y, width, height);
+		id++;
 		velX = 0;
 		velY = 0;
 		accelX = 0;
@@ -35,14 +44,32 @@ public class Block extends Rectangle{
 		onGround = false;
 		isSelectionBlock = selectionType;
 		this.level = level;
+		this.color = Color.WHITE;
+	}
+	
+	public Block(float x, float y, float width, float height, MainMenu level, boolean selectionType, Color color){
+		super(x, y, width, height);
+		id++;
+		velX = 0;
+		velY = 0;
+		accelX = 0;
+		accelY = 0;
+		isSelected = false;
+		isActive = false;
+		onGround = false;
+		isSelectionBlock = selectionType;
+		this.level = level;
+		this.color = color;
 	}
 	
 	public void render(Graphics g){
-		g.drawRect(x, y, width, height);
+		g.setColor(color);
+		g.fillRect(x, y, width, height);
+		g.setColor(Color.BLACK);
+		g.drawString("" + thisID, x, y);
 	}
 	
 	public void update(float delta){
-		//If this block has become active by being clicked on once
 		if(isActive && isSelectionBlock){
 			//Fall and undergo gravity physics if not selected
 			if(!isSelected){
@@ -78,8 +105,8 @@ public class Block extends Rectangle{
 	public void moveX(){
 		for(int i = 0; i < level.solids.size(); i++){
 			Block solid = level.solids.get(i);
-			if(solid.isSelectionBlock && solid.isSelected){
-				break; //cannot collide with selected blocks
+			if(solid.isSelectionBlock && solid.isSelected && solid != this){
+				continue; //ignore collision checks with selected blocks
 			}
 			if(isColliding(solid, x + velX, y) && solid != this){
 				while(!isColliding(solid, x + Math.signum(velX), y)){
@@ -99,8 +126,8 @@ public class Block extends Rectangle{
 	public void moveY(){
 		for(int i = 0; i < level.solids.size(); i++){
 			Block solid = level.solids.get(i);
-			if(solid.isSelectionBlock && solid.isSelected){
-				break; //cannot collide with selected blocks
+			if(solid.isSelectionBlock && solid.isSelected && solid != this){
+				continue; //ignore collision checks with selected blocks
 			}
 			if(isColliding(solid, x, y + velY) && solid != this){
 				while(!isColliding(solid, x, y + Math.signum(velY))){
@@ -139,8 +166,10 @@ public class Block extends Rectangle{
 	 * Checks if there is a collision if the player was at the given position.
 	 */
 	public boolean isColliding(Rectangle other, float x, float y){
-		Rectangle temp = new Rectangle(x, y, this.width, this.height);
-		return temp.overlaps(other);
+		if(x < other.x + other.width && x + width > other.x && y < other.y + other.height && y + height > other.y){
+			return true;
+		}
+		return false;
 	}
 	
 	/*
