@@ -1,6 +1,8 @@
 package com.swinestudios.onescreen;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.mini2Dx.core.game.GameContainer;
 import org.mini2Dx.core.geom.Rectangle;
@@ -8,6 +10,8 @@ import org.mini2Dx.core.graphics.Graphics;
 import org.mini2Dx.core.screen.GameScreen;
 import org.mini2Dx.core.screen.ScreenManager;
 import org.mini2Dx.core.screen.Transition;
+import org.mini2Dx.tiled.TiledMap;
+import org.mini2Dx.tiled.TiledObject;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -24,8 +28,12 @@ public class MainMenu implements GameScreen, InputProcessor{
 
 	public Player player;
 
+	public float camX, camY;
+
 	public Rectangle mouse;
 	public Block currentSelection;
+
+	private TiledMap map;
 
 	@Override
 	public int getId(){
@@ -34,28 +42,32 @@ public class MainMenu implements GameScreen, InputProcessor{
 
 	@Override
 	public void initialise(GameContainer gc){
-
+		try{
+			map = new TiledMap(Gdx.files.internal("monitorCircuitMap.tmx"));
+		}catch (IOException e){
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void postTransitionIn(Transition t){
 		solids = new ArrayList<Block>();
 		currentSelection = null;
-		//TODO Test code
-		solids.add(new Block(0, 400, 520, 48, this, false));
-		solids.add(new Block(0, 240, 32, 240, this, false));
-		solids.add(new Block(32, 480 - 100, 63, 63, this, false));
-		
-		//TODO Test for recursive floodFill
-		for(int i = 0; i < 4; i++){
-			for(int j = 0; j < i; j++){
-				solids.add(new Block(i * 32, j * 32, 32, 32, this, true, Color.GREEN));
-			}
-		}
-		
+
 		player = new Player(320, 240, 16, 16, this);
 		mouse = new Rectangle(Gdx.input.getX(), Gdx.input.getY(), 1, 1);
 		//solids.add(mouse);
+
+		camX = player.x - Gdx.graphics.getWidth() / 2;
+		camY = player.y - Gdx.graphics.getHeight() / 2;
+		if(map != null){
+			generateSolids(map);
+			generateBlueBlocks(map);
+			generateRedBlocks(map);
+			generateGreenBlocks(map);
+			generateWhiteBlocks(map);
+			generateYellowBlocks(map);
+		}
 
 		//Input handling
 		InputMultiplexer multiplexer = new InputMultiplexer();
@@ -81,12 +93,13 @@ public class MainMenu implements GameScreen, InputProcessor{
 
 	@Override
 	public void render(GameContainer gc, Graphics g){
+		map.draw(g, 0, 0);
 		renderSolids(g);
 		player.render(g);
 	}
 
 	@Override
-	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){	
+	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){
 		mouse.setX(Gdx.input.getX());
 		mouse.setY(Gdx.input.getY());
 
@@ -152,6 +165,120 @@ public class MainMenu implements GameScreen, InputProcessor{
 			}
 		}
 		return null;
+	}
+
+	/* 
+	 * Generates all solids based on a given tile map's object layer and adds them to the game. 
+	 */
+	public void generateSolids(TiledMap map){
+		List<TiledObject> objects = map.getObjectGroup("Solids").getObjects();
+		if(objects != null){ //if the given object layer exists
+			for(int i = 0; i < objects.size(); i++){
+				TiledObject temp = objects.get(i);
+				Block block = new Block(temp.getX(), temp.getY(), temp.getWidth(), temp.getHeight(), this, false);
+				if(solids != null){
+					solids.add(block);
+				}
+				else{
+					System.out.println("ArrayList solids does not exist."); //error message
+				}
+			}
+		}
+	}
+
+	/* 
+	 * Generates all blocks based on a given tile map's object layer and adds them to the game. 
+	 */
+	public void generateBlueBlocks(TiledMap map){
+		List<TiledObject> objects = map.getObjectGroup("BlocksBlue").getObjects();
+		if(objects != null){ //if the given object layer exists
+			for(int i = 0; i < objects.size(); i++){
+				TiledObject temp = objects.get(i);
+				Block block = new Block(temp.getX(), temp.getY(), temp.getWidth(), temp.getHeight(), this, true, Color.BLUE);
+				if(solids != null){
+					solids.add(block);
+				}
+				else{
+					System.out.println("ArrayList solids does not exist."); //error message
+				}
+			}
+		}
+	}
+	
+	/* 
+	 * Generates all blocks based on a given tile map's object layer and adds them to the game. 
+	 */
+	public void generateRedBlocks(TiledMap map){
+		List<TiledObject> objects = map.getObjectGroup("BlocksRed").getObjects();
+		if(objects != null){ //if the given object layer exists
+			for(int i = 0; i < objects.size(); i++){
+				TiledObject temp = objects.get(i);
+				Block block = new Block(temp.getX(), temp.getY(), temp.getWidth(), temp.getHeight(), this, true, Color.RED);
+				if(solids != null){
+					solids.add(block);
+				}
+				else{
+					System.out.println("ArrayList solids does not exist."); //error message
+				}
+			}
+		}
+	}
+	
+	/* 
+	 * Generates all blocks based on a given tile map's object layer and adds them to the game. 
+	 */
+	public void generateGreenBlocks(TiledMap map){
+		List<TiledObject> objects = map.getObjectGroup("BlocksGreen").getObjects();
+		if(objects != null){ //if the given object layer exists
+			for(int i = 0; i < objects.size(); i++){
+				TiledObject temp = objects.get(i);
+				Block block = new Block(temp.getX(), temp.getY(), temp.getWidth(), temp.getHeight(), this, true, Color.GREEN);
+				if(solids != null){
+					solids.add(block);
+				}
+				else{
+					System.out.println("ArrayList solids does not exist."); //error message
+				}
+			}
+		}
+	}
+	
+	/* 
+	 * Generates all blocks based on a given tile map's object layer and adds them to the game. 
+	 */
+	public void generateWhiteBlocks(TiledMap map){
+		List<TiledObject> objects = map.getObjectGroup("BlocksWhite").getObjects();
+		if(objects != null){ //if the given object layer exists
+			for(int i = 0; i < objects.size(); i++){
+				TiledObject temp = objects.get(i);
+				Block block = new Block(temp.getX(), temp.getY(), temp.getWidth(), temp.getHeight(), this, true, Color.WHITE);
+				if(solids != null){
+					solids.add(block);
+				}
+				else{
+					System.out.println("ArrayList solids does not exist."); //error message
+				}
+			}
+		}
+	}
+	
+	/* 
+	 * Generates all blocks based on a given tile map's object layer and adds them to the game. 
+	 */
+	public void generateYellowBlocks(TiledMap map){
+		List<TiledObject> objects = map.getObjectGroup("BlocksYellow").getObjects();
+		if(objects != null){ //if the given object layer exists
+			for(int i = 0; i < objects.size(); i++){
+				TiledObject temp = objects.get(i);
+				Block block = new Block(temp.getX(), temp.getY(), temp.getWidth(), temp.getHeight(), this, true, Color.YELLOW);
+				if(solids != null){
+					solids.add(block);
+				}
+				else{
+					System.out.println("ArrayList solids does not exist."); //error message
+				}
+			}
+		}
 	}
 
 	@Override

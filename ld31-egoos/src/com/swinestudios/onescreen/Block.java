@@ -27,7 +27,6 @@ public class Block extends Rectangle{
 	public boolean onGround;
 	public boolean isSelectionBlock; //hacky, used to determine what kind of block this is
 	
-	//public final Color[] wireColors = {Color.BLACK, Color.BLUE, Color.GRAY, Color.GREEN, Color.RED, Color.YELLOW, Color.WHITE, Color.ORANGE};
 	public Color color;
 	
 	private MainMenu level;
@@ -63,8 +62,10 @@ public class Block extends Rectangle{
 	}
 	
 	public void render(Graphics g){
-		g.setColor(color);
-		g.fillRect(x, y, width, height);
+		if(isSelectionBlock){
+			g.setColor(color);
+			g.fillRect(x, y, width, height);
+		}
 		g.setColor(Color.BLACK);
 		g.drawString("" + thisID, x, y);
 	}
