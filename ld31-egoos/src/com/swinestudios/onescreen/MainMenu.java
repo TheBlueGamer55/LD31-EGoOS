@@ -10,6 +10,7 @@ import org.mini2Dx.core.graphics.Graphics;
 import org.mini2Dx.core.screen.GameScreen;
 import org.mini2Dx.core.screen.ScreenManager;
 import org.mini2Dx.core.screen.Transition;
+import org.mini2Dx.core.screen.transition.NullTransition;
 import org.mini2Dx.tiled.TiledMap;
 import org.mini2Dx.tiled.TiledObject;
 
@@ -17,6 +18,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -30,14 +32,23 @@ public class MainMenu implements GameScreen, InputProcessor{
 
 	public Player player;
 
+	public static int blocksCorrupted = 0;
+	public static int maxBlocksCorrupted = 100;
+
 	public float camX, camY;
 
 	public Rectangle mouse;
 	public Block currentSelection;
 
+	public boolean isGameOverBad;
+	public boolean isGameOverGood;
+
 	private TiledMap map;
 	private Sprite mainMenuBackground;
 	private Sprite gameOverBackground;
+	private Sprite gameOverBackgroundBad;
+
+	private Sound gameplayTheme;
 
 	@Override
 	public int getId(){
@@ -51,15 +62,23 @@ public class MainMenu implements GameScreen, InputProcessor{
 		}catch (IOException e){
 			e.printStackTrace();
 		}
+
+		gameplayTheme = Gdx.audio.newSound(Gdx.files.internal("bient.ogg"));
+
 		mainMenuBackground = new Sprite(new Texture(Gdx.files.internal("mainMenuScreen.png")));
 		gameOverBackground = new Sprite(new Texture(Gdx.files.internal("blueScreenOfDeath.png")));
-		adjustSprite(mainMenuBackground, gameOverBackground);
+		gameOverBackgroundBad = new Sprite(new Texture(Gdx.files.internal("blueScreenOfDeathBad.png")));
+		adjustSprite(mainMenuBackground, gameOverBackground, gameOverBackgroundBad);
 		mainMenuBackground.scale(3);
 		gameOverBackground.scale(1);
+		gameOverBackgroundBad.scale(1);
 	}
 
 	@Override
 	public void postTransitionIn(Transition t){
+		isGameOverGood = false;
+		isGameOverBad = false;
+		blocksCorrupted = 0; 
 		solids = new ArrayList<Block>();
 		currentSelection = null;
 
@@ -101,34 +120,51 @@ public class MainMenu implements GameScreen, InputProcessor{
 
 	@Override
 	public void render(GameContainer gc, Graphics g){
-		if(!player.isActive){
+		if(!player.isActive && !isGameOverGood && !isGameOverBad){
 			g.drawSprite(mainMenuBackground);
+			System.out.println("drawing main menu");
 		}
 		else{
-			g.translate((float) Math.round(camX), (float) Math.round(camY)); //camera movement
-			map.draw(g, 0, 0);
-			renderSolids(g);
-			player.render(g);
+			if(isGameOverGood){
+				g.drawSprite(gameOverBackground);
+			}
+			else if(isGameOverBad){
+				g.drawSprite(gameOverBackgroundBad);
+			}
+			else{
+				g.translate((float) Math.round(camX), (float) Math.round(camY)); //camera movement
+				map.draw(g, 0, 0);
+				renderSolids(g);
+				player.render(g);
+				g.drawString("" + blocksCorrupted, camX, camY);
+			}
 		}
 	}
 
 	@Override
-	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){		
-		camX = player.x - Gdx.graphics.getWidth() / 2;
-		camY = player.y - Gdx.graphics.getHeight() / 2;
-		mouse.setX(camX + Gdx.input.getX());
-		mouse.setY(camY + Gdx.input.getY());
-
-		if(Gdx.input.isKeyPressed(Keys.ENTER)){
-			player.isActive = true;
+	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){	
+		if(blocksCorrupted >= maxBlocksCorrupted & !isGameOverBad){
+			System.out.println("Game over");
+			isGameOverBad = true;
+			player.isActive = false;
+		}
+		if(player.x >= 76 * 16 && player.y <= 30 && !isGameOverGood){ //extremely hacky code
+			System.out.println("Win");
+			isGameOverGood = true;
+			player.isActive = false;
+		}
+		if(!isGameOverGood && !isGameOverBad){ //if gameplay has started
+			camX = player.x - Gdx.graphics.getWidth() / 2;
+			camY = player.y - Gdx.graphics.getHeight() / 2;
+			mouse.setX(camX + Gdx.input.getX());
+			mouse.setY(camY + Gdx.input.getY());
+			updateSolids(delta);
+			if(player.isActive){
+				player.update(delta);
+			}
 		}
 		if(Gdx.input.isKeyPressed(Keys.ESCAPE)){
 			Gdx.app.exit();
-		}
-
-		updateSolids(delta);
-		if(player.isActive){
-			player.update(delta);
 		}
 	}
 
@@ -155,12 +191,16 @@ public class MainMenu implements GameScreen, InputProcessor{
 		if(start.isActive == true){
 			return;
 		}
+		if(start.color != target){
+			return;
+		}
 		else{
 			float x = start.getX() + 1;
 			float y = start.getY() + 1;
 			float offset = start.width;
 			if(start.color == target){
 				start.isActive = true;
+				blocksCorrupted++;
 			}
 			floodFill(blockExistsAt(x, y + offset), start.color); //south
 			floodFill(blockExistsAt(x, y - offset), start.color); //north
@@ -220,7 +260,7 @@ public class MainMenu implements GameScreen, InputProcessor{
 			}
 		}
 	}
-	
+
 	/* 
 	 * Generates all blocks based on a given tile map's object layer and adds them to the game. 
 	 */
@@ -239,7 +279,7 @@ public class MainMenu implements GameScreen, InputProcessor{
 			}
 		}
 	}
-	
+
 	/* 
 	 * Generates all blocks based on a given tile map's object layer and adds them to the game. 
 	 */
@@ -258,7 +298,7 @@ public class MainMenu implements GameScreen, InputProcessor{
 			}
 		}
 	}
-	
+
 	/* 
 	 * Generates all blocks based on a given tile map's object layer and adds them to the game. 
 	 */
@@ -277,7 +317,7 @@ public class MainMenu implements GameScreen, InputProcessor{
 			}
 		}
 	}
-	
+
 	/* 
 	 * Generates all blocks based on a given tile map's object layer and adds them to the game. 
 	 */
@@ -296,7 +336,7 @@ public class MainMenu implements GameScreen, InputProcessor{
 			}
 		}
 	}
-	
+
 	/*
 	 * Sets up any images that the player may have. Necessary because images are flipped and have the origin
 	 * on the bottom-left by default.
@@ -318,6 +358,19 @@ public class MainMenu implements GameScreen, InputProcessor{
 
 	@Override
 	public boolean keyDown(int keycode){
+		if(keycode == Keys.ENTER){
+			if(!player.isActive && !isGameOverGood && !isGameOverBad){ //if in main menu
+				player.isActive = true;
+				gameplayTheme.loop();
+			}
+			else if((isGameOverGood || isGameOverBad)){ //if in any game over screen, go back to main menu
+				player.isActive = false;
+				isGameOverGood = false;
+				isGameOverBad = false;
+				gameplayTheme.stop();
+				postTransitionIn(new NullTransition());
+			}
+		}
 		return false;
 	}
 
@@ -338,7 +391,7 @@ public class MainMenu implements GameScreen, InputProcessor{
 			for(int i = 0; i < solids.size(); i++){ //find the block that was clicked on
 				Block temp = solids.get(i);
 				if(mouse.overlaps(temp) && temp.isSelectionBlock){
-					floodFill(temp, temp.color); //TODO test line of code? maybe keep
+					floodFill(temp, temp.color); 
 					if(!temp.isActive){ //only runs once for each inactive block
 						temp.isActive = true;
 					}
@@ -350,6 +403,10 @@ public class MainMenu implements GameScreen, InputProcessor{
 		}
 		else{ //there is a block currently selected
 			currentSelection.isSelected = false;
+			//remove the block if it's placed inside of another
+			if(currentSelection.collisionExistsAt(currentSelection.x, currentSelection.y)){
+				solids.remove(currentSelection);
+			}
 			currentSelection = null;
 		}
 		return true; //touchDown() has been handled by this class

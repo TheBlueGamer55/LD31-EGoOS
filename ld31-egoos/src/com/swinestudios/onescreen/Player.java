@@ -61,7 +61,7 @@ public class Player implements InputProcessor{
 			onGround = true;
 		}
 		else{
-			onGround = true; //TODO switch back to false after testing
+			onGround = false; 
 		}
 		
 		accelX = 0; //keep resetting the x acceleration

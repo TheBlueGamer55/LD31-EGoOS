@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 
 public class Block extends Rectangle{
 	
-	//TODO debug variables
+	//debug variables
 	public static int id = 0;
 	public int thisID = id;
 	
@@ -115,8 +115,9 @@ public class Block extends Rectangle{
 				}
 				velX = 0;
 				//"corrupt" any other blocks touched by setting them active
-				if(solid.isSelectionBlock){ 
+				if(solid.isSelectionBlock && !solid.isActive){ 
 					solid.isActive = true;
+					MainMenu.blocksCorrupted++;
 				}
 			}
 		}
@@ -140,8 +141,9 @@ public class Block extends Rectangle{
 				}
 				velY = 0;
 				//"corrupt" any other blocks touched by setting them active
-				if(solid.isSelectionBlock){ 
+				if(solid.isSelectionBlock && !solid.isActive){ 
 					solid.isActive = true;
+					MainMenu.blocksCorrupted++;
 				}
 			}
 		}
@@ -187,7 +189,7 @@ public class Block extends Rectangle{
 	public boolean collisionExistsAt(float x, float y){
 		for(int i = 0; i < level.solids.size(); i++){
 			Rectangle solid = level.solids.get(i);
-			if(isColliding(solid, x, y)){
+			if(solid != this && isColliding(solid, x, y)){
 				return true;
 			}
 		}
