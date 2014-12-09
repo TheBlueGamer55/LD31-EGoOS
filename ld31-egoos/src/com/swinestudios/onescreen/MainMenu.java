@@ -122,7 +122,7 @@ public class MainMenu implements GameScreen, InputProcessor{
 	public void render(GameContainer gc, Graphics g){
 		if(!player.isActive && !isGameOverGood && !isGameOverBad){
 			g.drawSprite(mainMenuBackground);
-			System.out.println("drawing main menu");
+			//System.out.println("drawing main menu");
 		}
 		else{
 			if(isGameOverGood){
@@ -144,12 +144,12 @@ public class MainMenu implements GameScreen, InputProcessor{
 	@Override
 	public void update(GameContainer gc, ScreenManager<? extends GameScreen> sm, float delta){	
 		if(blocksCorrupted >= maxBlocksCorrupted & !isGameOverBad){
-			System.out.println("Game over");
+			//System.out.println("Game over");
 			isGameOverBad = true;
 			player.isActive = false;
 		}
 		if(player.x >= 76 * 16 && player.y <= 30 && !isGameOverGood){ //extremely hacky code
-			System.out.println("Win");
+			//System.out.println("Win");
 			isGameOverGood = true;
 			player.isActive = false;
 		}
